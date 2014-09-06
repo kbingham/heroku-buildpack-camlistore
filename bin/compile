@@ -5,6 +5,7 @@ set -eo pipefail
 mkdir -p "$1" "$2"
 build=$(cd "$1/" && pwd)
 cache=$(cd "$2/" && pwd)
+envd=$(cd "$3/" && pwd)
 
 cd /tmp
 curl --fail -sO https://storage.googleapis.com/golang/go1.3.1.linux-amd64.tar.gz
@@ -17,12 +18,31 @@ export PATH=$GOROOT/bin:$PATH
 
 cd "$build"
 
-mkdir -p .profile.d
-cat > .profile.d/camlistore.sh <<EOF
-export PATH="$HOME/bin:$PATH"
-EOF
-
 # so gitVersion() doesn't get called
 echo "heroku" > VERSION
 
 go run make.go -v
+
+mkdir Hblobs
+mkdir Hindex
+
+mkdir -p .config/camlistore
+cat > .config/camlistore/server-config.json <<'EOF'
+{
+    "auth": "userpass:alice:secret",
+    "identity": ["_env", "${CAMLI_KEYID}"],
+    "blobPath": "Hblobs",
+    "kvIndexFile": "Hindex/camli-index.kvdb",
+}
+EOF
+
+gpg --no-default-keyring --secret-keyring="$build/.config/camlistore/identity-secring.gpg" --import "$envd/CAMLI_GPG_SECRET_KEY"
+CAMLI_KEYID="$(gpg --no-default-keyring --secret-keyring=$build/.config/camlistore/identity-secring.gpg -K | egrep '^sec' | awk '{ print $2 }' | cut -d'/' -f2)"
+
+mkdir -p .profile.d
+cat > .profile.d/camlistore.sh <<EOF
+export PATH="\$HOME/bin:\$PATH"
+export CAMLI_KEYID="$CAMLI_KEYID"
+EOF
+
+echo 'web: camlistored -listen=":$PORT" -openbrowser=false' > Procfile
