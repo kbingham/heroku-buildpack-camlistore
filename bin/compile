@@ -30,7 +30,8 @@ cat > .config/camlistore/server-config.json <<'EOF'
     "identity": ["_env", "${CAMLI_CONFIG_KEYID}"],
     "s3": ["_env", "${CAMLI_CONFIG_S3}"],
     "postgres": ["_env", "${CAMLI_CONFIG_POSTGRES}"],
-    "dbname": ["_env", "${CAMLI_CONFIG_DBNAME}"]
+    "dbname": ["_env", "${CAMLI_CONFIG_DBNAME}"],
+    "slurpToMemory": true
 }
 EOF
 
