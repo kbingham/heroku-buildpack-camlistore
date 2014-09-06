@@ -1,7 +1,6 @@
 #!/bin/bash
 
 set -eo pipefail
-set -x
 
 mkdir -p "$1" "$2"
 build=$(cd "$1/" && pwd)
@@ -18,6 +17,7 @@ export PATH=$GOROOT/bin:$PATH
 
 cd "$build"
 
-env
+# so gitVersion() doesn't get called
 echo "heroku" > VERSION
+
 go run make.go -v
