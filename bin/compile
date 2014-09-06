@@ -41,8 +41,8 @@ mkdir -p .profile.d
 cat > .profile.d/camlistore.sh <<EOF
 export PATH="\$HOME/bin:\$PATH"
 export CAMLI_CONFIG_KEYID="$CAMLI_CONFIG_KEYID"
-export CAMLI_CONFIG_POSTGRES="\$(ruby -r uri -e 'u = URI.parse(\$ENV['\''DATABASE_URL'\'']); puts "#{u.user}@#{u.host}:#{u.password}"')"
-export CAMLI_CONFIG_DBNAME="\$(ruby -r uri -e 'u = URI.parse(\$ENV['\''DATABASE_URL'\'']); puts u.path[1..-1]')"
+export CAMLI_CONFIG_POSTGRES="\$(ruby -r uri -e 'u = URI.parse(ENV['\''DATABASE_URL'\'']); puts "#{u.user}@#{u.host}:#{u.password}"')"
+export CAMLI_CONFIG_DBNAME="\$(ruby -r uri -e 'u = URI.parse(ENV['\''DATABASE_URL'\'']); puts u.path[1..-1]')"
 EOF
 
 echo 'web: camlistored -listen=":$PORT" -openbrowser=false' > Procfile
