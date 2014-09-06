@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ -e make.go ]; then
+if [ -e "$1/make.go" ]; then
    echo "camilstore"
 else
     exit 1
