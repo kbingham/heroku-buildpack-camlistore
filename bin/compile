@@ -23,26 +23,26 @@ echo "heroku" > VERSION
 
 go run make.go -v
 
-mkdir Hblobs
-mkdir Hindex
-
 mkdir -p .config/camlistore
 cat > .config/camlistore/server-config.json <<'EOF'
 {
     "auth": "userpass:alice:secret",
-    "identity": ["_env", "${CAMLI_KEYID}"],
-    "blobPath": "Hblobs",
-    "kvIndexFile": "Hindex/camli-index.kvdb"
+    "identity": ["_env", "${CAMLI_CONFIG_KEYID}"],
+    "s3": ["_env", "${CAMLI_CONFIG_S3}"],
+    "postgres": ["_env", "${CAMLI_CONFIG_POSTGRES}"]
+    "dbname": ["_env", "${CAMLI_CONFIG_DBNAME}"]
 }
 EOF
 
 gpg --no-default-keyring --secret-keyring="$build/.config/camlistore/identity-secring.gpg" --import "$envd/CAMLI_GPG_SECRET_KEY"
-CAMLI_KEYID="$(gpg --no-default-keyring --secret-keyring=$build/.config/camlistore/identity-secring.gpg -K | egrep '^sec' | awk '{ print $2 }' | cut -d'/' -f2)"
+CAMLI_CONFIG_KEYID="$(gpg --no-default-keyring --secret-keyring=$build/.config/camlistore/identity-secring.gpg -K | egrep '^sec' | awk '{ print $2 }' | cut -d'/' -f2)"
 
 mkdir -p .profile.d
 cat > .profile.d/camlistore.sh <<EOF
 export PATH="\$HOME/bin:\$PATH"
-export CAMLI_KEYID="$CAMLI_KEYID"
+export CAMLI_CONFIG_KEYID="$CAMLI_CONFIG_KEYID"
+export CAMLI_CONFIG_POSTGRES="\$(ruby -r uri -e 'u = URI.parse(\$ENV['\''DATABASE_URL'\'']); puts "#{u.user}@#{u.host}:#{u.password}"')"
+export CAMLI_CONFIG_DBNAME="\$(ruby -r uri -e 'u = URI.parse(\$ENV['\''DATABASE_URL'\'']); puts u.path[1..-1]')"
 EOF
 
 echo 'web: camlistored -listen=":$PORT" -openbrowser=false' > Procfile
