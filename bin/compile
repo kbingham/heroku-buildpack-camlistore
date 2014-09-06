@@ -17,6 +17,11 @@ export PATH=$GOROOT/bin:$PATH
 
 cd "$build"
 
+mkdir -p .profile.d
+cat > .profile.d/camlistore.sh <<EOF
+export PATH="$HOME/bin:$PATH"
+EOF
+
 # so gitVersion() doesn't get called
 echo "heroku" > VERSION
 
