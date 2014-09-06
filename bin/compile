@@ -15,4 +15,6 @@ export GOROOT=/tmp/go
 export GOPATH=$build/.heroku/g
 export PATH=$GOROOT/bin:$PATH
 
+cd "$build"
+
 go run make.go
