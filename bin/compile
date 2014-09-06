@@ -18,4 +18,6 @@ export PATH=$GOROOT/bin:$PATH
 
 cd "$build"
 
+env
+echo "heroku" > VERSION
 go run make.go -v
