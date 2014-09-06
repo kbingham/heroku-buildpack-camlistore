@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -eo pipefail
+
+mkdir -p "$1" "$2"
+build=$(cd "$1/" && pwd)
+cache=$(cd "$2/" && pwd)
+
+cd /tmp
+curl --fail -sO https://storage.googleapis.com/golang/go1.3.1.linux-amd64.tar.gz
+tar zxf go1.3.1.linux-amd64.tar.gz
+rm go1.3.1.linux-amd64.tar.gz
+
+export GOROOT=/tmp/go
+export GOPATH=$build/.heroku/g
+export PATH=$GOROOT/bin:$PATH
+
+go run make.go
