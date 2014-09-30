@@ -28,7 +28,7 @@ cat > .config/camlistore/server-config.json <<'EOF'
 {
     "auth": "userpass:alice:secret",
     "identity": ["_env", "${CAMLI_CONFIG_KEYID}"],
-    "s3": ["_env", "${CAMLI_CONFIG_S3}"],
+    "blobPath": "/tmp/camlistore/blobs",
     "postgres": ["_env", "${CAMLI_CONFIG_POSTGRES}"],
     "dbname": ["_env", "${CAMLI_CONFIG_DBNAME}"],
     "slurpToMemory": true
